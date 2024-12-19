@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Times Table Tutor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result, #quiz-section {
+            margin-top: 20px;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 50%;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Interactive Times Table Tutor</h1>
+    <div>
+        <label for="number">Enter a Number:</label>
+        <input type="number" id="number" placeholder="Enter a number">
+        <br>
+        <button onclick="generateTable()">Generate Table</button>
+        <button onclick="startQuiz()">Take Quiz</button>
+        <!-- <button "location.href='{% url 'game' %}'">Play a Game</button> -->
+        <a href="{% url 'game' %}" class="btn">Play a Game</a>
+        <!-- <button onclick="sendFeedback()">Feedback</button> -->
+    </div>
+
+    <div id="result"></div>
+
+    <div id="quiz-section" style="display: none;">
+        <h2>Quiz</h2>
+        <p id="quiz-question"></p>
+        <input type="number" id="quiz-answer" placeholder="Your answer">
+        <button onclick="submitQuiz()">Submit</button>
+        <p id="quiz-feedback"></p>
+    </div>
+    <div id="puzzle-section" style="display: none;">
+        <h2>Puzzle</h2>
+        <p id="puzzle"></p>
+        <input type="number" id="puzzle-answer" placeholder="Your answer">
+        <button onclick="submitPuzzle()">Submit</button>
+        <p id="puzzle-feedback"></p>
+    </div>
+    
+    <div id="feedback-section" style="display: none;">
+        <h2>Feedback</h2>
+        <p id="feedback-message"></p>
+    </div>
+    
+
+    <script>
+        function generateTable() {           
+            const number = document.getElementById('number').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!number) {
+                alert('Please enter a number!');
+                return;
+            }
+
+            // fetch(`/api/generate_table/?number=${number}`)
+            fetch(`/api/generate_table/?number=${number}`)
+                .then(response => response.json())
+                .then(data => {
+                    let tableHtml = `<h2>Multiplication Table for ${number}</h2><table><tr><th>Multiplicand</th><th>Multiplier</th><th>Result</th></tr>`;
+                    for (let key in data) {
+                        tableHtml += `<tr><td>${number}</td><td>${key}</td><td>${data[key]}</td></tr>`;
+                    }
+                    tableHtml += '</table>';
+                    resultDiv.innerHTML = tableHtml;
+
+                    document.getElementById('quiz-section').style.display = 'none';
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+
+
+        function startQuiz() {
+            const number = document.getElementById('number').value;
+
+            if (!number) {
+                alert('Please enter a number!');
+                return;
+            }
+
+            const question = Math.floor(Math.random() * 12) + 1;
+            window.currentAnswer = number * question;
+
+            document.getElementById('quiz-section').style.display = 'block';
+            document.getElementById('quiz-question').textContent = `What is ${number} x ${question}?`;
+            document.getElementById('quiz-answer').value = '';
+            document.getElementById('quiz-feedback').textContent = '';
+        }
+
+        function submitQuiz() {
+            const number = document.getElementById('number').value;
+            const userAnswer = document.getElementById('quiz-answer').value;
+            const question = parseInt(document.getElementById('quiz-question').textContent.split('x')[1]);
+
+            if (!userAnswer) {
+                alert('Please enter your answer!');
+                return;
+            }
+
+            fetch('/api/quiz/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    number: parseInt(number),
+                    question: question,
+                    user_answer: parseInt(userAnswer),
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('quiz-feedback');
+                    if (data.correct) {
+                        feedback.textContent = 'Correct! Well done!';
+                        feedback.style.color = 'green';
+                    } else {
+                        feedback.textContent = `Incorrect! The correct answer was ${data.correct_answer}.`;
+                        feedback.style.color = 'red';
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+
+        }
+
+        function startPuzzle() {
+    const number = document.getElementById('number').value;
+
+    if (!number) {
+        alert('Please enter a number!');
+        return;
+    }
+
+    fetch(`/api/puzzle/?number=${number}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch puzzle.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('puzzle-section').style.display = 'block';
+            document.getElementById('puzzle').textContent = data.puzzle;
+            window.correctPuzzleAnswer = data.missing_factor;
+            document.getElementById('puzzle-feedback').textContent = ''; // Clear previous feedback
+        })
+        .catch(error => {
+            console.error('Error fetching puzzle:', error);
+            alert('An error occurred while starting the puzzle. Please try again later.');
+        });
+}
+
+// Function to submit a puzzle answer
+function submitPuzzle() {
+    const userAnswer = document.getElementById('puzzle-answer').value;
+
+    if (!userAnswer) {
+        alert('Please enter your answer!');
+        return;
+    }
+
+    const feedbackSection = document.getElementById('puzzle-feedback');
+    const userAnswerInt = parseInt(userAnswer);
+
+    if (userAnswerInt === window.correctPuzzleAnswer) {
+        feedbackSection.textContent = 'Correct! Great job!';
+        feedbackSection.style.color = 'green';
+        sendFeedback(true);
+    } else {
+        feedbackSection.textContent = `Incorrect! The correct answer was ${window.correctPuzzleAnswer}.`;
+        feedbackSection.style.color = 'red';
+        sendFeedback(false);
+    }
+}
+
+// Function to send feedback to the server
+function sendFeedback(correct) {
+    fetch('/api/feedback/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ correct: correct }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to send feedback.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const feedbackSection = document.getElementById('feedback-section');
+            feedbackSection.style.display = 'block';
+            document.getElementById('feedback-message').textContent = data.feedback;
+        })
+        .catch(error => {
+            console.error('Error sending feedback:', error);
+            alert('An error occurred while sending feedback. Please try again later.');
+        });
+}
+
+    </script>
+</body>
+</html>

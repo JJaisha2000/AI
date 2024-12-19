@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Times Table Tutor Games</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            margin: 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result, #quiz-section {
+            margin-top: 20px;
+        }
+
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 50%;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .game-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .questions, .answers {
+            width: 40%;
+        }
+
+        .draggable {
+            padding: 10px;
+            background-color: lightblue;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: grab;
+        }
+
+        .dropzone {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: lightyellow;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .dropzone.correct {
+            background-color: lightgreen;
+        }
+
+        .dropzone.incorrect {
+            background-color: lightcoral;
+        }
+        .game-container {
+            text-align: center;
+        }
+
+        .question-container {
+            margin-top: 20px;
+        }
+
+        .question {
+            font-size: 24px;
+            margin: 10px;
+        }
+
+        input[type="text"] {
+            font-size: 18px;
+            padding: 5px;
+            width: 100px;
+        }
+
+        .timer {
+            /* font-size: 32px; */
+            color: red;
+        }
+
+        #result {
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Times Table Tutor Games</h1>
+    <div>
+        
+        <br>
+        <button onclick="Puzzle()">Puzzle</button>
+        <button onclick="startGame()">Matching Game</button>
+        <button onclick="time()">Timed Challenge</button>
+    </div>
+
+    <div id="result"></div>
+    <div id="puzzle-start" style="display: none;">
+        <center><h2>Puzzle</h2></center>
+    <label for="number">Enter a Number:</label>
+        <input type="number" id="number" placeholder="Enter a number">
+        <button onclick="startPuzzle()">Start</button>
+    </div>
+    <div id="puzzle-section" style="display: none;">
+        
+        <p id="puzzle"></p>
+        <input type="number" id="puzzle-answer" placeholder="Your answer">
+        <button onclick="submitPuzzle()">Submit</button>
+        <p id="puzzle-feedback"></p>
+    </div>
+    <div id="matching-game" style="display: none;">
+        <h2>Matching Game</h2>
+    <div class="game-container">
+        
+        <div class="questions" id="questions-container"></div>
+        <div class="answers" id="answers-container"></div>
+    </div>
+</div>
+    <div id="time-section" style="display: none;">
+        <center><h2>Timed Challenge</h2></center>
+
+        <div class="game-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; font-family: Arial, sans-serif;">
+            <!-- Timer Section -->
+            <div style="text-align: right; width: 100%; display: flex; justify-content: flex-end; padding-right: 10px;">
+                <h7>Time Remaining:</h7>
+                <div id="timer" class="timer" style="margin-left: 10px; font-weight: bold;">15</div>
+            </div>
+        
+            <!-- Question Section -->
+            <div id="question-container" class="question-container" style="text-align: center; font-size: 18px; font-weight: bold;"></div>
+        
+            <!-- Answer Input -->
+            <div style="text-align: center; margin-top: 10px;">
+                <input type="text" id="answer" placeholder="Your Answer" autofocus style="padding: 5px; width: 150px; font-size: 16px;" />
+                <button onclick="submitAnswer()" style="margin-left: 10px; padding: 5px 10px; font-size: 16px; background-color: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer;">Submit</button>
+            </div>
+        
+            <!-- Result Section -->
+            <div id="result" style="text-align: center; font-size: 16px; color: green; margin-top: 10px;"></div>
+        
+            <!-- Start Button -->
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="startTime()" style="padding: 10px 20px; font-size: 16px; background-color: #28A745; color: white; border: none; border-radius: 4px; cursor: pointer;">Start Game</button>
+            </div>
+        </div>
+        
+
+    <p id="result" style="text-align: center; font-weight: bold;"></p>
+    <div id="feedback-section" style="display: none;">
+        <h2>Feedback</h2>
+        <p id="feedback-message"></p>
+    </div>
+    
+</div>
+    <script>
+
+function Puzzle(){
+    document.getElementById('puzzle-start').style.display = 'block';}
+        
+        function startPuzzle() {
+    const number = document.getElementById('number').value;
+
+    if (!number) {
+        alert('Please enter a number!');
+        return;
+    }
+
+    fetch(`/api/puzzle/?number=${number}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch puzzle.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('puzzle-section').style.display = 'block';
+            document.getElementById('puzzle').textContent = data.puzzle;
+            window.correctPuzzleAnswer = data.missing_factor;
+            document.getElementById('puzzle-feedback').textContent = ''; // Clear previous feedback
+        })
+        .catch(error => {
+            console.error('Error fetching puzzle:', error);
+            alert('An error occurred while starting the puzzle. Please try again later.');
+        });
+}
+
+// Function to submit a puzzle answer
+function submitPuzzle() {
+    const userAnswer = document.getElementById('puzzle-answer').value;
+
+    if (!userAnswer) {
+        alert('Please enter your answer!');
+        return;
+    }
+
+    const feedbackSection = document.getElementById('puzzle-feedback');
+    const userAnswerInt = parseInt(userAnswer);
+
+    if (userAnswerInt === window.correctPuzzleAnswer) {
+        feedbackSection.textContent = 'Correct! Great job!';
+        feedbackSection.style.color = 'green';
+        sendFeedback(true);
+    } else {
+        feedbackSection.textContent = `Incorrect! The correct answer was ${window.correctPuzzleAnswer}.`;
+        feedbackSection.style.color = 'red';
+        sendFeedback(false);
+    }
+}
+
+// Function to send feedback to the server
+function sendFeedback(correct) {
+    fetch('/api/feedback/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ correct: correct }),
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to send feedback.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const feedbackSection = document.getElementById('feedback-section');
+            feedbackSection.style.display = 'block';
+            document.getElementById('feedback-message').textContent = data.feedback;
+        })
+        .catch(error => {
+            console.error('Error sending feedback:', error);
+            alert('An error occurred while sending feedback. Please try again later.');
+        });
+}
+
+
+function startGame() {
+    document.getElementById('matching-game').style.display = 'block';
+            fetch('/api/get_matching_game/')
+                .then(response => response.json())
+                .then(data => {
+                    const questionsContainer = document.getElementById('questions-container');
+                    const answersContainer = document.getElementById('answers-container');
+                    const result = document.getElementById('result');
+
+                    // Clear previous content
+                    questionsContainer.innerHTML = '';
+                    answersContainer.innerHTML = '';
+                    result.textContent = '';
+
+                    // Add questions as draggable elements
+                    data.problems.forEach(problem => {
+                        const question = document.createElement('div');
+                        question.textContent = problem.question;
+                        question.setAttribute('data-answer', problem.answer);
+                        question.classList.add('draggable');
+                        question.setAttribute('draggable', true);
+
+                        question.addEventListener('dragstart', () => {
+                            question.classList.add('dragging');
+                        });
+
+                        question.addEventListener('dragend', () => {
+                            question.classList.remove('dragging');
+                        });
+
+                        questionsContainer.appendChild(question);
+                    });
+
+                    // Add answers as drop zones
+                    data.shuffled_answers.forEach(answer => {
+                        const dropzone = document.createElement('div');
+                        dropzone.textContent = answer; // Visible answer text
+
+                        // dropzone.textContent = 'Drop here';
+                        dropzone.setAttribute('data-answer', answer);
+                        dropzone.classList.add('dropzone');
+
+                        dropzone.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                        });
+
+                        dropzone.addEventListener('drop', () => {
+                            const dragged = document.querySelector('.dragging');
+                            const draggedAnswer = dragged.getAttribute('data-answer');
+                            const dropzoneAnswer = dropzone.getAttribute('data-answer');
+
+                            if (draggedAnswer === dropzoneAnswer) {
+                                dropzone.textContent = dragged.textContent;
+                                dropzone.classList.add('correct');
+                                dragged.remove();
+                                result.textContent = 'Correct! Great job!';
+                            } else {
+                                dropzone.classList.add('incorrect');
+                                result.textContent = 'Incorrect! Try again.';
+                            }
+                        });
+
+                        answersContainer.appendChild(dropzone);
+                    });
+                });
+        }
+
+function time(){
+    document.getElementById('time-section').style.display = 'block';}
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timeRemaining = 15;
+        let timerInterval;
+
+        // Start the game and initialize the timer
+        function startTime() {
+           
+            score = 0;
+            currentQuestionIndex = 0;
+            timeRemaining = 15;
+            document.getElementById('result').textContent = '';
+
+            fetch('/api/get_timed_challenge/')
+                .then(response => response.json())
+                .then(data => {
+                    questions = data.problems;
+                    showNextQuestion();
+                    startTimer();
+                });
+        }
+
+        // Show the next question
+        function showNextQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const question = questions[currentQuestionIndex];
+                document.getElementById('question-container').textContent = question.question;
+            } else {
+                clearInterval(timerInterval);
+                document.getElementById('result').textContent = `Game Over! Your score is: ${score}`;
+            }
+        }
+
+        // Start the timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('result').textContent = `Time's up! Your score is: ${score}`;
+                } else {
+                    document.getElementById('timer').textContent = timeRemaining;
+                    timeRemaining--;
+                }
+            }, 1000);
+        }
+
+        // Submit the answer
+        function submitAnswer() {
+            const userAnswer = document.getElementById('answer').value;
+            const correctAnswer = questions[currentQuestionIndex].answer;
+
+            if (parseInt(userAnswer) === correctAnswer) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+            document.getElementById('answer').value = ''; // Clear the input field
+
+            showNextQuestion();
+        }
+    </script>
+</body>
+</html>

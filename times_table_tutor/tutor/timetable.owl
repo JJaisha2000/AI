@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://example.org/interactive_times_table_tutor#"
+     xml:base="http://example.org/interactive_times_table_tutor"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://example.org/interactive_times_table_tutor"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#exemplifies -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/interactive_times_table_tutor#exemplifies">
+        <rdfs:domain rdf:resource="http://example.org/interactive_times_table_tutor#MultiplicationFacts"/>
+        <rdfs:range rdf:resource="http://example.org/interactive_times_table_tutor#Patterns"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#hasExplanation -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/interactive_times_table_tutor#hasExplanation">
+        <rdfs:domain rdf:resource="http://example.org/interactive_times_table_tutor#MultiplicationFacts"/>
+        <rdfs:domain rdf:resource="http://example.org/interactive_times_table_tutor#Questions"/>
+        <rdfs:range rdf:resource="http://example.org/interactive_times_table_tutor#Feedback"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#includes -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/interactive_times_table_tutor#includes">
+        <rdfs:domain rdf:resource="http://example.org/interactive_times_table_tutor#InteractiveTimesTableTutor"/>
+        <rdfs:range rdf:resource="http://example.org/interactive_times_table_tutor#Games"/>
+        <rdfs:range rdf:resource="http://example.org/interactive_times_table_tutor#Quizzes"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#integratedIn -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/interactive_times_table_tutor#integratedIn">
+        <rdfs:domain rdf:resource="http://example.org/interactive_times_table_tutor#MultiplicationFacts"/>
+        <rdfs:range rdf:resource="http://example.org/interactive_times_table_tutor#InteractiveTimesTableTutor"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#isRelatedTo -->
+
+    <owl:ObjectProperty rdf:about="http://example.org/interactive_times_table_tutor#isRelatedTo">
+        <rdfs:domain rdf:resource="http://example.org/interactive_times_table_tutor#Numbers"/>
+        <rdfs:domain rdf:resource="http://example.org/interactive_times_table_tutor#Questions"/>
+        <rdfs:range rdf:resource="http://example.org/interactive_times_table_tutor#MultiplicationFacts"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Feedback -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Feedback">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#Matching_Game"/>
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#Puzzle"/>
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#Questions"/>
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#Timed_Challenge"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Games -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Games">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#InteractiveTimesTableTutor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#InteractiveTimesTableTutor -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#InteractiveTimesTableTutor"/>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Matching_Game -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Matching_Game">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#Games"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#MultiplicationFacts -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#MultiplicationFacts">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#InteractiveTimesTableTutor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Numbers -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Numbers">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#MultiplicationFacts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Patterns -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Patterns">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#MultiplicationFacts"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Puzzle -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Puzzle">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#Games"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Questions -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Questions">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#Quizzes"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Quizzes -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Quizzes">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#InteractiveTimesTableTutor"/>
+    </owl:Class>
+    
+
+
+    <!-- http://example.org/interactive_times_table_tutor#Timed_Challenge -->
+
+    <owl:Class rdf:about="http://example.org/interactive_times_table_tutor#Timed_Challenge">
+        <rdfs:subClassOf rdf:resource="http://example.org/interactive_times_table_tutor#Games"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+
